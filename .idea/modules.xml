@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/buscapeProdutosNaturas.iml" filepath="$PROJECT_DIR$/buscapeProdutosNaturas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/buscapeProdutosNaturais.iml" filepath="$PROJECT_DIR$/buscapeProdutosNaturais.iml" />
     </modules>
   </component>
 </project>
