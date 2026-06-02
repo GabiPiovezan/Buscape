@@ -1,7 +1,13 @@
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 public class Main {
+    private static final String DB_URL = "jdbc:mysql://localhost:3307/";
+    private static final String DB_USUARIO = "root";
+    private static final String DB_SENHA = "root";
+
+
     public static void main(String[] args){
         Scanner scan = new Scanner(System.in);
         List<String> clientes = new ArrayList<>();
@@ -117,6 +123,11 @@ public class Main {
                 System.out.println("Código: " + (i+1) + "." + produto.get(i).toString());
             }
         }
+    }
+
+    private static conection conectar(){
+        return DriverManager.getConnection(DB_URL,DB_USUARIO,DB_SENHA)
+
     }
 
 
