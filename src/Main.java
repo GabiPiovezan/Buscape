@@ -1,17 +1,13 @@
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
 import java.util.Scanner;
 public class Main {
-    private static final String DB_URL = "jdbc:mysql://localhost:3307/cliente";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/buscape";
     private static final String DB_USUARIO = "root";
-    private static final String DB_SENHA = "root";
+    private static final String DB_SENHA = "";
 
 
     public static void main(String[] args){
         Scanner scan = new Scanner(System.in);
-        List<String> clientes = new ArrayList<>();
-        List<String> produto = new ArrayList<>();
 
 
 
@@ -21,11 +17,11 @@ public class Main {
 
         int opcao = 0;
 
-        while (opcao != 5){
+        while (opcao != 6) {
             exibirmenu();
             System.out.println("Escolha uma opção: ");
 
-            if (scan.hasNextInt()){
+            if (scan.hasNextInt()) {
                 opcao = scan.nextInt();
                 scan.nextLine();
 
@@ -34,30 +30,32 @@ public class Main {
                 scan.nextLine();
                 continue;
             }
-        switch (opcao) {
-            case 1:
-                cadastrarCliente(scan, clientes);
-                break;
-            case 2:
-                cadastrarProduto(scan, produto);
-                break;
-            case 3:
-                listarTodosClientes(clientes);
-                break;
-            case 4:
-                listarTodosProdutos(produto);
-                break;
-            case 5:
-                System.out.println("Saindo do sistema......até logo!");
-                break;
-            default:
-                System.out.println("Esta opção é Invalida, por favor escolha outra!");
+            switch (opcao) {
+                case 1:
+                    cadastrarCliente(scan);
+                    break;
+                case 2:
+                    cadastrarProduto(scan);
+                    break;
+                case 3:
+                    buscarClientePorNome(scan);
+                    break;
+                case 4:
+                    listarTodosClientes();
+                    break;
+                case 5:
+                    listarTodosProdutos();
+                    break;
+                case 6:
+                    System.out.println("Saindo do sistema......até logo!");
+                    break;
+                default:
+                    System.out.println("Esta opção é Invalida, por favor escolha outra!");
 
+            }
         }
-        }
+
         scan.close();
-
-
 
     }
     public static void exibirmenu(){
@@ -65,11 +63,13 @@ public class Main {
         System.out.println("---Menu do Buscapé---");
         System.out.println("-1 Cadastro de Clientes: ");
         System.out.println("-2 Cadastro de Produtos: ");
-        System.out.println("-3 Listar todos os Clientes: ");
-        System.out.println("-4 Listar todos os Produtos: ");
+        System.out.println("-3 Buscar Clientes por nome: ");
+        System.out.println("-4 Listar todos os Clientes: ");
+        System.out.println("-5 Listar todos os Produtos: ");
+        System.out.println("-6 Sair do sistema!");
         System.out.println("-------------------------------");
     }
-    public static void cadastrarCliente(Scanner scan, List<String> cliente){
+    public static void cadastrarCliente(Scanner scan){
 
         System.out.println("-----Cadastro de Cliente-----");
         System.out.println("Digite seu nome: ");
@@ -77,69 +77,169 @@ public class Main {
         System.out.println("Digite seu CPF: ");
         String cpf = scan.nextLine();
         System.out.println("Digite seu Endereço: ");
-        String endereco = + scan.nextLine();
+        String endereco = scan.nextLine();
+        if (endereco.length() > 250){
+            System.out.println("Endereço Inválido!");
+        }
         System.out.println("Digite seu Telefone: ");
         String telefone = scan.nextLine();
         System.out.println("Digite seu E-mail: ");
+        String email = scan.nextLine();
         if (!email.contains("@")){
-            System.out.println("E-mail inválido!");;
+            System.out.println("E-mail inválido!");
         }
 
             String sql = "INSERT INTO cliente(nome,cpf,endereco,telefone,email) VALUES(?,?,?,?,?)";
-            try (connection conn = conectar(); preparedStatement stmt = conn.preparedStatement(sql)){
-                stmt.setString(1,nome);
-                stmt.setString(2,CPF);
-                stmt.setString(3,endereco);
-                stmt.setString(4,telefone);
-                stmt.setString(5,email);
+
+            try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, nome);
+                stmt.setString(2, cpf);
+                stmt.setString(3, endereco);
+                stmt.setString(4, telefone);
+                stmt.setString(5, email);
 
                 int linhasAfetadas = stmt.executeUpdate();
-                if (linhasAfetadas>0){
+                if (linhasAfetadas > 0) {
                     System.out.println("Cliente salvo com SUCESSO!");
-
                 }
-
-        }
-        cliente.add(dados);
-        System.out.println("Cliente cadastrado com SUCESSO!");
-    }
-    public static void listarTodosClientes(List<String> cliente){
-        System.out.println("Lista de Clientes");
-
-        if (cliente.isEmpty()){
-            System.out.println("Nenhum cliente Encontrado!");
-        } else {
-            for (int i = 0; i< cliente.size(); i++){
-                System.out.println("código: " + (i+1) + "." + cliente.get(i).toString());
+            } catch (Exception e) {
+                System.out.println("Falha ao Salvar!");
+                throw new RuntimeException(e);
             }
         }
+    public static void listarTodosClientes(){
+        System.out.println("Lista de Clientes");
+        String sql = "SELECT * FROM clientes";
+
+        try(Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+            boolean encontrouDados = false;
+
+            while (rs.next()) {
+                encontrouDados = true;
+                System.out.println("Nome: "
+                        + rs.getString("nome")
+                        + " CPF: "
+                        + rs.getString("cpf")
+                        + " Email: "
+                        + rs.getString("email")
+                );
+
+            }
+            if (encontrouDados) {
+                System.out.println("Dados encontrados!");
+            } else {
+                System.out.println("Nenhum dado encontrado!");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        }
+    public static void buscarClientePorNome(Scanner scan) {
+
+        System.out.println("Digite o nome do Cliente: ");
+        String nome = scan.nextLine();
+
+
+        String sql = "SELECT * FROM cliente WHERE nome LIKE ?";
+
+        try (Connection conn = conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + nome + "%");
+            ResultSet rs = stmt.executeQuery();
+
+
+            boolean encontrouDados = false;
+
+            while (rs.next()) {
+                encontrouDados = true;
+                System.out.println("Nome: "
+                        + rs.getString("nome")
+                        + " CPF: "
+                        + rs.getString("cpf")
+                        + " Email: "
+                        + rs.getString("email")
+                );
+
+
+            }
+            if (encontrouDados) {
+                System.out.println("Dados encontrados!");
+            } else {
+                System.out.println("Nenhum dado encontrado!");
+            }
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-    public static void cadastrarProduto(Scanner scan, List<String> produto){
-        String dados = "";
+    public static void cadastrarProduto(Scanner scan) {
+
         System.out.println("Cadastro de Produto");
         System.out.println("Digite o nome do Produto: ");
-        dados = scan.nextLine();
+        String nome = scan.nextLine();
         System.out.println("Digite a Marca do Produto: ");
-        dados += "|" + scan.nextLine();
+        String marca = scan.nextLine();
         System.out.println("Digite a Quantidade: ");
-        dados += "|" + scan.nextInt();
-        produto.add(dados);
-            System.out.println("Produto Cadastrado com SUCESSO!");
-        }
-    public static void listarTodosProdutos(List<String> produto){
-        System.out.println("Lista de Produtos");
+        String quantidade = scan.nextLine();
 
-        if (produto.isEmpty()){
-            System.out.println("Nenhum Produto Encontrado!");
-        } else {
-            for (int i = 0; i< produto.size(); i++){
-                System.out.println("Código: " + (i+1) + "." + produto.get(i).toString());
+        String sql = "INSERT INTO produto(nome,marca,quantidade) VALUES(?,?,?)";
+
+        try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            stmt.setString(2, marca);
+            stmt.setString(3, quantidade);
+
+            int linhasAfetadas = stmt.executeUpdate();
+            if (linhasAfetadas > 0) {
+                System.out.println("Produto Cadastrado com SUCESSO!");
             }
+        } catch (Exception e) {
+            System.out.println("Falha ao Cadastrar!");
+            throw new RuntimeException(e);
         }
     }
+    public static void listarTodosProdutos() {
+        System.out.println("Lista de Produtos");
+        String sql = "SELECT * FROM produtos";
 
-    private static conection conectar() throws SQLException{
-        return DriverManager.getconection(DB_URL,DB_USUARIO,DB_SENHA)
+        try(Connection conn = conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()){
+
+            boolean encontrouDados = false;
+
+            while (rs.next()){
+                encontrouDados =true;
+                System.out.println("Nome: "
+                        + rs.getString("nome")
+                        +" Marca: "
+                        + rs.getString("marca")
+                        +" Quantidade: "
+                        + rs.getString("quantidade")
+                );
+
+
+            }
+            if(encontrouDados){
+                System.out.println("Dados encontrados!");
+            }else {
+                System.out.println("Nenhum dado encontrado!");
+            }
+
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    private static Connection conectar() throws SQLException {
+        return DriverManager.getConnection(DB_URL,DB_USUARIO,DB_SENHA);
 
     }
 
