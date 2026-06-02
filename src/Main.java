@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 public class Main {
-    private static final String DB_URL = "jdbc:mysql://localhost:3307/";
+    private static final String DB_URL = "jdbc:mysql://localhost:3307/cliente";
     private static final String DB_USUARIO = "root";
     private static final String DB_SENHA = "root";
 
@@ -70,21 +70,34 @@ public class Main {
         System.out.println("-------------------------------");
     }
     public static void cadastrarCliente(Scanner scan, List<String> cliente){
-        String dados ="";
+
         System.out.println("-----Cadastro de Cliente-----");
         System.out.println("Digite seu nome: ");
-        dados = scan.nextLine();
+        String nome = scan.nextLine();
         System.out.println("Digite seu CPF: ");
-        dados += "|" + scan.nextLine();
+        String cpf = scan.nextLine();
         System.out.println("Digite seu Endereço: ");
-        dados += "|" + scan.nextLine();
+        String endereco = + scan.nextLine();
         System.out.println("Digite seu Telefone: ");
-        dados += "|" + scan.nextLine();
+        String telefone = scan.nextLine();
         System.out.println("Digite seu E-mail: ");
-        if (scan.nextLine().contains("@")){
-            dados += "|" + scan.nextLine();
-        } else{
-            System.out.println("E-mail Inválido!");
+        if (!email.contains("@")){
+            System.out.println("E-mail inválido!");;
+        }
+
+            String sql = "INSERT INTO cliente(nome,cpf,endereco,telefone,email) VALUES(?,?,?,?,?)";
+            try (connection conn = conectar(); preparedStatement stmt = conn.preparedStatement(sql)){
+                stmt.setString(1,nome);
+                stmt.setString(2,CPF);
+                stmt.setString(3,endereco);
+                stmt.setString(4,telefone);
+                stmt.setString(5,email);
+
+                int linhasAfetadas = stmt.executeUpdate();
+                if (linhasAfetadas>0){
+                    System.out.println("Cliente salvo com SUCESSO!");
+
+                }
 
         }
         cliente.add(dados);
@@ -125,8 +138,8 @@ public class Main {
         }
     }
 
-    private static conection conectar(){
-        return DriverManager.getConnection(DB_URL,DB_USUARIO,DB_SENHA)
+    private static conection conectar() throws SQLException{
+        return DriverManager.getconection(DB_URL,DB_USUARIO,DB_SENHA)
 
     }
 
