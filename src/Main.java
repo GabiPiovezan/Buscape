@@ -1,7 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 public class Main {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/buscape";
+    private static final String DB_URL = "jdbc:mysql://localhost:3307/buscape";
     private static final String DB_USUARIO = "root";
     private static final String DB_SENHA = "";
 
@@ -17,7 +17,7 @@ public class Main {
 
         int opcao = 0;
 
-        while (opcao != 6) {
+        while (opcao != 7) {
             exibirmenu();
             System.out.println("Escolha uma opção: ");
 
@@ -38,15 +38,18 @@ public class Main {
                     cadastrarProduto(scan);
                     break;
                 case 3:
-                    buscarClientePorNome(scan);
+                    //cadastrarPedido;
                     break;
                 case 4:
-                    listarTodosClientes();
+                    buscarClientePorNome(scan);
                     break;
                 case 5:
-                    listarTodosProdutos();
+                    listarTodosClientes();
                     break;
                 case 6:
+                    listarTodosProdutos();
+                    break;
+                case 7:
                     System.out.println("Saindo do sistema......até logo!");
                     break;
                 default:
@@ -58,17 +61,20 @@ public class Main {
         scan.close();
 
     }
+
     public static void exibirmenu(){
         System.out.println("-----------------------");
         System.out.println("---Menu do Buscapé---");
         System.out.println("-1 Cadastro de Clientes: ");
         System.out.println("-2 Cadastro de Produtos: ");
-        System.out.println("-3 Buscar Clientes por nome: ");
-        System.out.println("-4 Listar todos os Clientes: ");
-        System.out.println("-5 Listar todos os Produtos: ");
-        System.out.println("-6 Sair do sistema!");
+        System.out.println("-3 Pedido");
+        System.out.println("-4 Buscar Clientes por nome: ");
+        System.out.println("-5 Listar todos os Clientes: ");
+        System.out.println("-6 Listar todos os Produtos: ");
+        System.out.println("-7 Sair do sistema!");
         System.out.println("-------------------------------");
     }
+
     public static void cadastrarCliente(Scanner scan){
 
         System.out.println("-----Cadastro de Cliente-----");
@@ -107,6 +113,7 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
+
     public static void listarTodosClientes(){
         System.out.println("Lista de Clientes");
         String sql = "SELECT * FROM clientes";
@@ -135,6 +142,7 @@ public class Main {
             throw new RuntimeException(e);
         }
         }
+
     public static void buscarClientePorNome(Scanner scan) {
 
         System.out.println("Digite o nome do Cliente: ");
@@ -175,6 +183,7 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
+
     public static void cadastrarProduto(Scanner scan) {
 
         System.out.println("Cadastro de Produto");
@@ -201,6 +210,8 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
+
+
     public static void listarTodosProdutos() {
         System.out.println("Lista de Produtos");
         String sql = "SELECT * FROM produtos";
@@ -242,6 +253,37 @@ public class Main {
         return DriverManager.getConnection(DB_URL,DB_USUARIO,DB_SENHA);
 
     }
+
+    public static void montarPedido(Scanner scan){
+      listarTodosClientes();
+      listarTodosProdutos();
+        System.out.println("----Informe seus dados----");
+        System.out.println("Informe seu Nome: ");
+        String nome = scan.nextLine();
+        System.out.println("----Acesse o Portfólio de Produtos----");
+        System.out.println("Informe o Produto: ");
+        String produto = scan.nextLine();
+        System.out.println("Informe a Quantidade desejada: ");
+        String quantidade = scan.nextLine();
+
+        String sql = "INSERT INTO pedido(nome,produto,quantidade) VALUES (?,?,?)";
+        try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            stmt.setString(2, produto);
+            stmt.setString(3, quantidade);
+
+            int linhasAfetadas = stmt.executeUpdate();
+            if (linhasAfetadas > 0) {
+                System.out.println("Pedido Recebido com SUCESSO!");
+            }
+        }
+            catch (Exception e) {
+                System.out.println("Falha ao Cadastrar!");
+                throw new RuntimeException(e);
+            }
+
+    }
+
 
 
 
