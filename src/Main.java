@@ -1,7 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 public class Main {
-    private static final String DB_URL = "jdbc:mysql://localhost:3307/buscape";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/buscape";
     private static final String DB_USUARIO = "root";
     private static final String DB_SENHA = "";
 
