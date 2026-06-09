@@ -191,6 +191,8 @@ public class Main {
         String nome = scan.nextLine();
         System.out.println("Digite a Marca do Produto: ");
         String marca = scan.nextLine();
+        System.out.println("Digite o Preço do produto: ");
+        String preco = scan.nextLine();
         System.out.println("Digite a Quantidade: ");
         String quantidade = scan.nextLine();
 
@@ -199,7 +201,8 @@ public class Main {
         try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, nome);
             stmt.setString(2, marca);
-            stmt.setString(3, quantidade);
+            stmt.setString(3, preco);
+            stmt.setString(4, quantidade);
 
             int linhasAfetadas = stmt.executeUpdate();
             if (linhasAfetadas > 0) {
