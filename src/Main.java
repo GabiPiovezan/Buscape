@@ -1,4 +1,3 @@
-import java.lang.classfile.instruction.SwitchCase;
 import java.sql.*;
 import java.util.Scanner;
 public class Main {
@@ -38,7 +37,7 @@ public class Main {
                     cadastrarProduto(scan);
                     break;
                 case 3:
-                    montarPedido(scan);
+                    exibirmenu2(scan);
                     break;
                 case 4:
                     buscarClientePorNome(scan);
@@ -116,7 +115,7 @@ public class Main {
 
     public static void listarTodosClientes(Scanner scan) {
         System.out.println("Lista de Clientes");
-        String sql = "SELECT * FROM clientes";
+        String sql = "SELECT * FROM cliente";
 
         try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
@@ -258,23 +257,25 @@ public class Main {
 
     }
 
-    public static void montarPedido(Scanner scan) {
+    public static void fazerCadastroDoPedido(Scanner scan) {
         listarTodosClientes(scan);
         listarTodosProdutos(scan);
-        exibirmenu2(scan);
+
         System.out.println("----Informe seus dados----");
-        System.out.println("Informe seu Nome: ");
-        String nome = scan.nextLine();
+        System.out.println("Informe o id do seu Nome: ");
+        String id_cliente = scan.nextLine();
+
         System.out.println("----Acesse o Portfólio de Produtos----");
-        System.out.println("Informe o Produto: ");
-        String produto = scan.nextLine();
+        System.out.println("Informe o id do Produto: ");
+        String id_produto = scan.nextLine();
+
         System.out.println("Informe a Quantidade desejada: ");
         String quantidade = scan.nextLine();
 
-        String sql = "INSERT INTO pedido(nome,produto,quantidade) VALUES (?,?,?)";
+        String sql = "INSERT INTO pedido(id_cliente,id_produto,quantidade) VALUES (?,?,?)";
         try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, nome);
-            stmt.setString(2, produto);
+            stmt.setString(1, id_cliente);
+            stmt.setString(2, id_produto);
             stmt.setString(3, quantidade);
 
             int linhasAfetadas = stmt.executeUpdate();
@@ -288,22 +289,24 @@ public class Main {
 
     }
     public static void exibirmenu2(Scanner scan) {
-        System.out.println("---Menu do Pedido---");
-        System.out.println("-1 Montar Pedido");
-        System.out.println("-2 Sair do Sistema!");
         int opcao2 = 0;
 
         while (opcao2 != 2) {
-            exibirmenu2(scan);
-            System.out.println("Escolha uma opção: ");
+        System.out.println("---Menu do Pedido---");
+        System.out.println("-1 Montar Pedido");
+        System.out.println("-2 Sair do Sistema!");
 
             if (scan.hasNextInt()) {
                 opcao2 = scan.nextInt();
                 scan.nextLine();
+            } else {
+                System.out.println("Por Favor, escolha uma opção válida!");
+                scan.nextLine();
+                continue;
             }
             switch (opcao2) {
                 case 1:
-                    montarPedido(scan);
+                    fazerCadastroDoPedido(scan);
                     break;
                 case 2:
                     System.out.println("Encerrando o Sistema.....Até logo!");
