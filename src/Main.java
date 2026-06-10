@@ -1,3 +1,4 @@
+import java.lang.classfile.instruction.SwitchCase;
 import java.sql.*;
 import java.util.Scanner;
 public class Main {
@@ -6,9 +7,8 @@ public class Main {
     private static final String DB_SENHA = "";
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-
 
 
         System.out.println("---Buscapé produtos Naturais---");
@@ -38,16 +38,16 @@ public class Main {
                     cadastrarProduto(scan);
                     break;
                 case 3:
-                    //cadastrarPedido;
+                    montarPedido(scan);
                     break;
                 case 4:
                     buscarClientePorNome(scan);
                     break;
                 case 5:
-                    listarTodosClientes();
+                    listarTodosClientes(scan);
                     break;
                 case 6:
-                    listarTodosProdutos();
+                    listarTodosProdutos(scan);
                     break;
                 case 7:
                     System.out.println("Saindo do sistema......até logo!");
@@ -62,7 +62,7 @@ public class Main {
 
     }
 
-    public static void exibirmenu(){
+    public static void exibirmenu() {
         System.out.println("-----------------------");
         System.out.println("---Menu do Buscapé---");
         System.out.println("-1 Cadastro de Clientes: ");
@@ -75,7 +75,7 @@ public class Main {
         System.out.println("-------------------------------");
     }
 
-    public static void cadastrarCliente(Scanner scan){
+    public static void cadastrarCliente(Scanner scan) {
 
         System.out.println("-----Cadastro de Cliente-----");
         System.out.println("Digite seu nome: ");
@@ -84,41 +84,41 @@ public class Main {
         String cpf = scan.nextLine();
         System.out.println("Digite seu Endereço: ");
         String endereco = scan.nextLine();
-        if (endereco.length() > 250){
+        if (endereco.length() > 250) {
             System.out.println("Endereço Inválido!");
         }
         System.out.println("Digite seu Telefone: ");
         String telefone = scan.nextLine();
         System.out.println("Digite seu E-mail: ");
         String email = scan.nextLine();
-        if (!email.contains("@")){
+        if (!email.contains("@")) {
             System.out.println("E-mail inválido!");
         }
 
-            String sql = "INSERT INTO cliente(nome,cpf,endereco,telefone,email) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO cliente(nome,cpf,endereco,telefone,email) VALUES(?,?,?,?,?)";
 
-            try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, nome);
-                stmt.setString(2, cpf);
-                stmt.setString(3, endereco);
-                stmt.setString(4, telefone);
-                stmt.setString(5, email);
+        try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            stmt.setString(2, cpf);
+            stmt.setString(3, endereco);
+            stmt.setString(4, telefone);
+            stmt.setString(5, email);
 
-                int linhasAfetadas = stmt.executeUpdate();
-                if (linhasAfetadas > 0) {
-                    System.out.println("Cliente salvo com SUCESSO!");
-                }
-            } catch (Exception e) {
-                System.out.println("Falha ao Salvar!");
-                throw new RuntimeException(e);
+            int linhasAfetadas = stmt.executeUpdate();
+            if (linhasAfetadas > 0) {
+                System.out.println("Cliente salvo com SUCESSO!");
             }
+        } catch (Exception e) {
+            System.out.println("Falha ao Salvar!");
+            throw new RuntimeException(e);
         }
+    }
 
-    public static void listarTodosClientes(){
+    public static void listarTodosClientes(Scanner scan) {
         System.out.println("Lista de Clientes");
         String sql = "SELECT * FROM clientes";
 
-        try(Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             boolean encontrouDados = false;
 
@@ -141,7 +141,7 @@ public class Main {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        }
+    }
 
     public static void buscarClientePorNome(Scanner scan) {
 
@@ -196,7 +196,7 @@ public class Main {
         System.out.println("Digite a Quantidade: ");
         String quantidade = scan.nextLine();
 
-        String sql = "INSERT INTO produto(nome,marca,quantidade) VALUES(?,?,?)";
+        String sql = "INSERT INTO produto(nome,marca,preco,quantidade) VALUES(?,?,?,?)";
 
         try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, nome);
@@ -215,34 +215,35 @@ public class Main {
     }
 
 
-    public static void listarTodosProdutos() {
+    public static void listarTodosProdutos(Scanner scan) {
         System.out.println("Lista de Produtos");
-        String sql = "SELECT * FROM produtos";
+        String sql = "SELECT * FROM produto";
 
-        try(Connection conn = conectar();
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()){
+        try (Connection conn = conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             boolean encontrouDados = false;
 
-            while (rs.next()){
-                encontrouDados =true;
+            while (rs.next()) {
+                encontrouDados = true;
                 System.out.println("Nome: "
                         + rs.getString("nome")
-                        +" Marca: "
+                        + " Marca: "
                         + rs.getString("marca")
-                        +" Quantidade: "
+                        + " Quantidade: "
                         + rs.getString("quantidade")
+                        + "Preço: "
+                        + rs.getString("preco")
                 );
 
 
             }
-            if(encontrouDados){
+            if (encontrouDados) {
                 System.out.println("Dados encontrados!");
-            }else {
+            } else {
                 System.out.println("Nenhum dado encontrado!");
             }
-
 
 
         } catch (Exception e) {
@@ -253,13 +254,14 @@ public class Main {
     }
 
     private static Connection conectar() throws SQLException {
-        return DriverManager.getConnection(DB_URL,DB_USUARIO,DB_SENHA);
+        return DriverManager.getConnection(DB_URL, DB_USUARIO, DB_SENHA);
 
     }
 
-    public static void montarPedido(Scanner scan){
-      listarTodosClientes();
-      listarTodosProdutos();
+    public static void montarPedido(Scanner scan) {
+        listarTodosClientes(scan);
+        listarTodosProdutos(scan);
+        exibirmenu2(scan);
         System.out.println("----Informe seus dados----");
         System.out.println("Informe seu Nome: ");
         String nome = scan.nextLine();
@@ -279,15 +281,38 @@ public class Main {
             if (linhasAfetadas > 0) {
                 System.out.println("Pedido Recebido com SUCESSO!");
             }
+        } catch (Exception e) {
+            System.out.println("Falha ao Cadastrar!");
+            throw new RuntimeException(e);
         }
-            catch (Exception e) {
-                System.out.println("Falha ao Cadastrar!");
-                throw new RuntimeException(e);
-            }
 
     }
+    public static void exibirmenu2(Scanner scan) {
+        System.out.println("---Menu do Pedido---");
+        System.out.println("-1 Montar Pedido");
+        System.out.println("-2 Sair do Sistema!");
+        int opcao2 = 0;
 
+        while (opcao2 != 2) {
+            exibirmenu2(scan);
+            System.out.println("Escolha uma opção: ");
 
+            if (scan.hasNextInt()) {
+                opcao2 = scan.nextInt();
+                scan.nextLine();
+            }
+            switch (opcao2) {
+                case 1:
+                    montarPedido(scan);
+                    break;
+                case 2:
+                    System.out.println("Encerrando o Sistema.....Até logo!");
+                    break;
+                default:
+                    System.out.println("Esta opção é Invalida, por favor escolha outra!");
+            }
+        }
+    }
 
 
 }
