@@ -49,6 +49,12 @@ public class Main {
                     listarTodosProdutos(scan);
                     break;
                 case 7:
+                    fazerUpdatePedido(scan);
+                    break;
+                case 8:
+                    fazerDelete(scan);
+                    break;
+                case 9:
                     System.out.println("Saindo do sistema......até logo!");
                     break;
                 default:
@@ -70,7 +76,9 @@ public class Main {
         System.out.println("-4 Buscar Clientes por nome: ");
         System.out.println("-5 Listar todos os Clientes: ");
         System.out.println("-6 Listar todos os Produtos: ");
-        System.out.println("-7 Sair do sistema!");
+        System.out.println("-7 Atualizar Informações do Pedido: ");
+        System.out.println("-8 Excuir Informações do Pedido: ");
+        System.out.println("-9 Sair do sistema!");
         System.out.println("-------------------------------");
     }
 
@@ -316,6 +324,64 @@ public class Main {
             }
         }
     }
+    public static void fazerUpdatePedido(Scanner scan) {
+        System.out.println("por favor, digite o id do pedido que deseja alterar: ");
+        int idPedido = scan.nextInt();
+        scan.nextLine();
 
+        System.out.println("Digite o NOVO nome do produto: ");
+        String novoProduto = scan.nextLine();
 
-}
+        System.out.println("digite a NOVA quantidade: ");
+        String novaQuantidade = scan.nextLine();
+
+        String sql = "UPDATE pedido SET id_produto = ?, quantidade = ? Where id = ? ";
+
+        try (Connection conn = conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, novoProduto);
+            stmt.setString(2, novaQuantidade);
+            stmt.setInt(3, idPedido);
+
+            int linhasAfetadas = stmt.executeUpdate();
+
+            if (linhasAfetadas > 0) {
+                System.out.println("Pedido Atualizado com SUCESSO!");
+            } else {
+                System.out.println("Nenhum pedido foi encontrado com o id informado!");
+            }
+        } catch (Exception e) {
+            System.out.println("Falha ao atualizar o Pedido!");
+            throw new RuntimeException(e);
+        }
+
+        }
+        public static void fazerDelete(Scanner scan){
+            System.out.println("Por favor, digite o id do pedido que deseja excluir: ");
+            int idPedido = scan.nextInt();
+            scan.nextLine();
+
+            String sql = "DELETE FROM pedido WHERE id = ?";
+
+            try(Connection conn = conectar();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setInt(1, idPedido);
+
+                int linhasAfetadas = stmt.executeUpdate();
+
+                if (linhasAfetadas > 0) {
+                    System.out.println("Pedido excluido com SUCESSO!");
+                } else {
+                    System.out.println("Nenhum pedido foi encontrado com o id informado!");
+                }
+            } catch (Exception e) {
+                System.out.println("Falha ao excluir o pedido!");
+                throw new RuntimeException(e);
+            }
+
+        }
+
+    }
+
