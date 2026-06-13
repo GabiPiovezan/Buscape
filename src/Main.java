@@ -86,20 +86,50 @@ public class Main {
 
         System.out.println("-----Cadastro de Cliente-----");
         System.out.println("Digite seu nome: ");
-        String nome = scan.nextLine();
+        String nome = scan.nextLine().trim();
+        if (nome.isEmpty()){
+            System.out.println("Erro: O nome não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
+        if (nome.length() < 3){
+            System.out.println("Erro: O Informe um nome válido!");
+            return;
+        }
+
         System.out.println("Digite seu CPF: ");
-        String cpf = scan.nextLine();
+        String cpf = scan.nextLine().trim();
+        if (cpf.isEmpty()){
+            System.out.println("Erro: O CPF não pode ficar em branco! cadastro cancelado.");
+            return;
+        }
         System.out.println("Digite seu Endereço: ");
-        String endereco = scan.nextLine();
+        String endereco = scan.nextLine().trim();
         if (endereco.length() > 250) {
             System.out.println("Endereço Inválido!");
         }
+        if (endereco.isEmpty()){
+            System.out.println("Erro: O endereço não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
         System.out.println("Digite seu Telefone: ");
-        String telefone = scan.nextLine();
+        String telefone = scan.nextLine().trim();
+        if (telefone.isEmpty()){
+            System.out.println("Erro: O telefone não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
+        if (telefone.length() < 3){
+            System.out.println("Erro: O telefone informado esta Inválido, cadastro cancelado!");
+            return;
+        }
         System.out.println("Digite seu E-mail: ");
-        String email = scan.nextLine();
+        String email = scan.nextLine().trim();
         if (!email.contains("@")) {
             System.out.println("E-mail inválido!");
+            return;
+        }
+        if (email.isEmpty()){
+            System.out.println("Erro: O campo do e-mail não pode ficar em branco!");
+            return;
         }
 
         String sql = "INSERT INTO cliente(nome,cpf,endereco,telefone,email) VALUES(?,?,?,?,?)";
@@ -195,13 +225,41 @@ public class Main {
 
         System.out.println("Cadastro de Produto");
         System.out.println("Digite o nome do Produto: ");
-        String nome = scan.nextLine();
+        String nome = scan.nextLine().trim();
+        if (nome.isEmpty()){
+            System.out.println("Erro: O nome do produto não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
+        if (nome.length() < 2){
+            System.out.println("Erro: O nome do produto informado está incorreto, cadastro cancelado!");
+            return;
+        }
         System.out.println("Digite a Marca do Produto: ");
-        String marca = scan.nextLine();
+        String marca = scan.nextLine().trim();
+        if (marca.isEmpty()){
+            System.out.println("Erro: A marca não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
+        if (marca.length() <2){
+            System.out.println("Erro: A marca informada está incorreta, cadastro cancelado!");
+            return;
+        }
         System.out.println("Digite o Preço do produto: ");
-        String preco = scan.nextLine();
+        String preco = scan.nextLine().trim();
+        if (preco.isEmpty()){
+            System.out.println("Erro: O campo preço não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
+        if (preco.length() < 2){
+            System.out.println("Erro: O preço informado está incorreto, cadastro cancelado!");
+            return;
+        }
         System.out.println("Digite a Quantidade: ");
-        String quantidade = scan.nextLine();
+        String quantidade = scan.nextLine().trim();
+        if (quantidade.isEmpty()){
+            System.out.println("Erro: O campo quantidade não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
 
         String sql = "INSERT INTO produto(nome,marca,preco,quantidade) VALUES(?,?,?,?)";
 
@@ -271,14 +329,30 @@ public class Main {
 
         System.out.println("----Informe seus dados----");
         System.out.println("Informe o id do seu Nome: ");
-        String id_cliente = scan.nextLine();
+        String id_cliente = scan.nextLine().trim();
+        if (id_cliente.isEmpty()){
+            System.out.println("Erro: Este campo não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
 
         System.out.println("----Acesse o Portfólio de Produtos----");
         System.out.println("Informe o id do Produto: ");
-        String id_produto = scan.nextLine();
+        String id_produto = scan.nextLine().trim();
+        if (id_produto.isEmpty()){
+            System.out.println("Erro: O campo não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
 
         System.out.println("Informe a Quantidade desejada: ");
-        String quantidade = scan.nextLine();
+        String quantidade = scan.nextLine().trim();
+        if (quantidade.isEmpty()){
+            System.out.println("Erro: O campo não pode ficar em branco, cadastro cancelado!");
+            return;
+        }
+        if (quantidade.length() < 1){
+            System.out.println("Erro: A quntidade precisa ser igual ou superior a 1, cadastro cancelado!");
+            return;
+        }
 
         String sql = "INSERT INTO pedido(id_cliente,id_produto,quantidade) VALUES (?,?,?)";
         try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -327,13 +401,13 @@ public class Main {
     public static void fazerUpdatePedido(Scanner scan) {
         System.out.println("por favor, digite o id do pedido que deseja alterar: ");
         int idPedido = scan.nextInt();
-        scan.nextLine();
+        scan.nextLine().trim();
 
         System.out.println("Digite o NOVO nome do produto: ");
-        String novoProduto = scan.nextLine();
+        String novoProduto = scan.nextLine().trim();
 
         System.out.println("digite a NOVA quantidade: ");
-        String novaQuantidade = scan.nextLine();
+        String novaQuantidade = scan.nextLine().trim();
 
         String sql = "UPDATE pedido SET id_produto = ?, quantidade = ? Where id = ? ";
 
@@ -360,7 +434,7 @@ public class Main {
         public static void fazerDelete(Scanner scan){
             System.out.println("Por favor, digite o id do pedido que deseja excluir: ");
             int idPedido = scan.nextInt();
-            scan.nextLine();
+            scan.nextLine().trim();
 
             String sql = "DELETE FROM pedido WHERE id = ?";
 
